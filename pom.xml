@@ -12,9 +12,8 @@
 
     <name>Explore With Me</name>
     <modules>
-        <module>statistic/stat_service</module>
-        <module>statistic/stat_client</module>
         <module>emw</module>
+        <module>stat-service</module>
     </modules>
 
     <groupId>ru.practicum</groupId>
