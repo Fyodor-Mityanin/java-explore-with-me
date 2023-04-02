@@ -26,6 +26,6 @@ public class StatServiceImpl implements StatService {
     }
 
     public List<StatisticDto> getStatistic(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
-        return statRepository.getStatisticUnique(start, end, uris, unique);
+        return statRepository.getStatistic(start, end, uris, unique);
     }
 }

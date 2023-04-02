@@ -8,7 +8,7 @@ public class EndpointHitMapper {
         endpointHit.setApp(dto.getApp());
         endpointHit.setUri(dto.getUri());
         endpointHit.setIp(dto.getIp());
-        endpointHit.setHitTime(dto.getHitTime());
+        endpointHit.setHitTime(dto.getTimestamp());
         return endpointHit;
     }
 }

@@ -8,5 +8,4 @@ public class StatClientApp {
     public static void main(String[] args) {
         SpringApplication.run(StatClientApp.class, args);
     }
-
 }
