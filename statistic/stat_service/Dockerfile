@@ -1,3 +1,3 @@
 FROM amazoncorretto:11
-COPY target/stat_service-0.0.1-SNAPSHOT.jar app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+COPY target/*.jar app.jar
+ENTRYPOINT ["java", "-Dspring.profiles.active=docker","-jar","/app.jar"]

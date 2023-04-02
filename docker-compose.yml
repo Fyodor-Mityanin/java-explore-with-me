@@ -6,8 +6,8 @@ services:
       - "9090:9090"
     depends_on:
       - stats-db
-#    environment:
-#      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats
+  #    environment:
+  #      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats
 
   stats-db:
     image: postgres:14-alpine
@@ -22,22 +22,22 @@ services:
     volumes:
       - ./db/stat_init.sql:/docker-entrypoint-initdb.d/init.sql
 
-#  ewm-service:
-#    build: ./statistic/stat_service #заглушка
-#    ports:
-#      - "8080:8080"
-#    depends_on:
-#      - ewm-db
-#
-#  ewm-db:
-#    image: postgres:14-alpine
-#    container_name: postgres-ewm
-#    restart: always
-#    ports:
-#      - "8081:5432"
-#    environment:
-#      POSTGRES_USER: user
-#      POSTGRES_PASSWORD: password
-#      POSTGRES_DB: ewm
-#    volumes:
-#      - ./db/ewm_init.sql:/docker-entrypoint-initdb.d/init.sql
+  ewm-service:
+    build: ./emw
+    ports:
+      - "8080:8080"
+    depends_on:
+      - ewm-db
+
+  ewm-db:
+    image: postgres:14-alpine
+    container_name: postgres-ewm
+    restart: always
+    ports:
+      - "8081:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ewm
+    volumes:
+      - ./db/ewm_init.sql:/docker-entrypoint-initdb.d/init.sql
