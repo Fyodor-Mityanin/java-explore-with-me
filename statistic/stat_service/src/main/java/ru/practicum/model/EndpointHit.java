@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
         query = "select eh.app as app, eh.uri as uri, case when :unique then count(DISTINCT eh.ip) else count(*) end as hits " +
                 "from endpoint_hits eh " +
                 "where eh.hit_time between :start and :end " +
-                "and eh.uri in :uris " +
+                "and :uris is null or eh.uri in :uris " +
                 "group by eh.app, eh.uri " +
                 "order by hits desc",
         resultSetMapping = "to_statistic_dto"
