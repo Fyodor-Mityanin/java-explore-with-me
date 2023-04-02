@@ -19,7 +19,8 @@ import java.time.LocalDateTime;
                 "from endpoint_hits eh " +
                 "where eh.hit_time between :start and :end " +
                 "and eh.uri in :uris " +
-                "group by eh.app, eh.uri",
+                "group by eh.app, eh.uri " +
+                "order by hits desc",
         resultSetMapping = "to_statistic_dto"
 )
 @SqlResultSetMapping(
