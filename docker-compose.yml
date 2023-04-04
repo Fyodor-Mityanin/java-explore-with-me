@@ -23,7 +23,7 @@ services:
       - ./db/stat_init.sql:/docker-entrypoint-initdb.d/init.sql
 
   ewm-service:
-    build: ./emw
+    build: ./ewm
     ports:
       - "8080:8080"
     depends_on:

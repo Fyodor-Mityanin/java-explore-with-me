@@ -10,7 +10,7 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public interface StatClient {
-    ResponseEntity<Object> hit(EndpointHitDto endpointHitDto);
+    ResponseEntity<Void> hit(EndpointHitDto endpointHitDto);
 
     List<StatisticDto> stats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique);
 }

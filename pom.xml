@@ -12,7 +12,7 @@
 
     <name>Explore With Me</name>
     <modules>
-        <module>emw</module>
+        <module>ewm</module>
         <module>stat-service</module>
     </modules>
 

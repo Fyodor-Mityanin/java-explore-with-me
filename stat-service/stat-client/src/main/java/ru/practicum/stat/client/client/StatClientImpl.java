@@ -25,7 +25,7 @@ public class StatClientImpl implements StatClient {
     }
 
     @Override
-    public ResponseEntity<Object> hit(EndpointHitDto endpointHitDto) {
+    public ResponseEntity<Void> hit(EndpointHitDto endpointHitDto) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<EndpointHitDto> request = new HttpEntity<>(endpointHitDto, headers);
@@ -33,7 +33,7 @@ public class StatClientImpl implements StatClient {
                 serviceUrl + "/hit",
                 HttpMethod.POST,
                 request,
-                Object.class
+                Void.class
         );
     }
 
@@ -42,10 +42,8 @@ public class StatClientImpl implements StatClient {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(serviceUrl + "/stats")
                 .queryParam("start", start.toString())
                 .queryParam("end", end.toString())
-                .queryParam("unique", unique.toString());
-        for (String uri: uris) {
-            uriBuilder.queryParam("uris", uri);
-        }
+                .queryParam("unique", unique.toString())
+                .queryParam("uris", String.join(",", uris));
         ResponseEntity<List<StatisticDto>> responseEntity =
                 restTemplate.exchange(
                         uriBuilder.toUriString(),
