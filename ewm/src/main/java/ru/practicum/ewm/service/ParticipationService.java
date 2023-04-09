@@ -33,10 +33,10 @@ public class ParticipationService {
 
     public ParticipationRequestDto createParticipation(Long userId, Long eventId) {
         User requester = userRepository.findById(userId).orElseThrow(
-                () -> new NotFoundException(String.format("Юзер %d не найден", userId))
+                () -> new NotFoundException("User with id=" + userId + " was not found")
         );
         Event event = eventRepository.findById(eventId).orElseThrow(
-                () -> new NotFoundException(String.format("Ивент %d не найден", eventId))
+                () -> new NotFoundException("Event with id=" + eventId + " was not found")
         );
         Participation participation = ParticipationMapper.toObject(event, requester, Status.PENDING);
         participation = participationRepository.save(participation);

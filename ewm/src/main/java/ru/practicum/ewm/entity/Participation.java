@@ -5,7 +5,7 @@ import lombok.Setter;
 import ru.practicum.ewm.entity.enums.Status;
 
 import javax.persistence.*;
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -26,7 +26,7 @@ public class Participation {
     private Event event;
 
     @Column(name = "created")
-    private Instant created;
+    private LocalDateTime created = LocalDateTime.now();
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)

@@ -2,10 +2,16 @@ package ru.practicum.ewm.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.ewm.entity.dto.EventFullDto;
+import ru.practicum.ewm.entity.dto.NewEventDto;
 import ru.practicum.ewm.entity.dto.ParticipationRequestDto;
+import ru.practicum.ewm.service.EventService;
 import ru.practicum.ewm.service.ParticipationService;
+
+import javax.validation.Valid;
 
 @Slf4j
 @RestController
@@ -15,15 +21,23 @@ public class UserController {
 
     private final ParticipationService participationService;
 
+    private final EventService eventService;
+
     @Autowired
-    public UserController(ParticipationService participationService) {
+    public UserController(ParticipationService participationService, EventService eventService) {
         this.participationService = participationService;
+        this.eventService = eventService;
     }
 
     @PostMapping("/{userId}/requests")
+    @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestDto createParticipation(@PathVariable Long userId, @RequestParam Long eventId) {
         return participationService.createParticipation(userId, eventId);
     }
 
-
+    @PostMapping("/{userId}/events")
+    @ResponseStatus(HttpStatus.CREATED)
+    public EventFullDto createEvent(@Valid @RequestBody NewEventDto newEventDto, @PathVariable Long userId) {
+        return eventService.createEvent(newEventDto, userId);
+    }
 }

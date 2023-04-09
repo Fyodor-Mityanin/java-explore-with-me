@@ -5,7 +5,7 @@ import lombok.Data;
 import ru.practicum.ewm.entity.enums.Status;
 
 import java.io.Serializable;
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 /**
  * A DTO for the {@link ru.practicum.ewm.entity.Participation} entity
@@ -16,6 +16,6 @@ public class ParticipationRequestDto implements Serializable {
     private final Long id;
     private final Long requester;
     private final Long event;
-    private final Instant created;
+    private final LocalDateTime created;
     private final Status status;
 }

@@ -6,12 +6,19 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.ewm.error.exeptions.NotFoundException;
 
+import java.time.LocalDateTime;
+
 @RestControllerAdvice
 public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNotFoundException(final NotFoundException e) {
-        return new ErrorResponse(e.getMessage());
+    public ApiError handleNotFoundException(final NotFoundException e) {
+        return ApiError.builder()
+                .status(HttpStatus.NOT_FOUND)
+                .reason(e.getCause())
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
     }
 }

@@ -7,7 +7,7 @@ import ru.practicum.ewm.entity.enums.State;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -24,12 +24,10 @@ public class Event {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Size(max = 255)
     @NotNull
     @Column(name = "annotation", nullable = false)
     private String annotation;
 
-    @Size(max = 255)
     @NotNull
     @Column(name = "description", nullable = false)
     private String description;
@@ -39,10 +37,10 @@ public class Event {
     private Category category;
 
     @Column(name = "created")
-    private Instant created;
+    private LocalDateTime created = LocalDateTime.now();
 
     @Column(name = "event_date")
-    private Instant eventDate;
+    private LocalDateTime eventDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "initiator")
@@ -65,7 +63,7 @@ public class Event {
     private Integer participantLimit;
 
     @Column(name = "published_on")
-    private Instant publishedOn;
+    private LocalDateTime publishedOn;
 
     @NotNull
     @Column(name = "request_moderation", nullable = false)
