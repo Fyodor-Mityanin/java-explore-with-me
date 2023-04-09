@@ -9,7 +9,7 @@ DROP TYPE IF EXISTS state;
 
 CREATE TYPE state AS ENUM ('PENDING', 'PUBLISHED', 'CANCELED');
 
-CREATE TYPE status AS ENUM ('PENDING', 'PUBLISHED', 'CANCELED');
+CREATE TYPE participationStatus AS ENUM ('PENDING', 'CONFIRMED', 'REJECTED');
 
 CREATE TABLE IF NOT EXISTS users
 (
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS participations
     event     BIGINT
         CONSTRAINT participation_event_id_fk REFERENCES EVENTS (ID),
     created   TIMESTAMP WITHOUT TIME ZONE,
-    status    status                                  NOT NULL DEFAULT 'PENDING',
+    status    participationStatus                     NOT NULL DEFAULT 'PENDING',
     CONSTRAINT pk_participation PRIMARY KEY (id)
 );
 

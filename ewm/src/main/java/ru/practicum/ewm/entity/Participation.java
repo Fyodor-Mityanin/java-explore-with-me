@@ -2,7 +2,7 @@ package ru.practicum.ewm.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.practicum.ewm.entity.enums.Status;
+import ru.practicum.ewm.entity.enums.RequestStatus;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -30,5 +30,5 @@ public class Participation {
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private RequestStatus status;
 }

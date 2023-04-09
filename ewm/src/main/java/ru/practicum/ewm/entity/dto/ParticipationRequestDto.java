@@ -2,7 +2,7 @@ package ru.practicum.ewm.entity.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.ewm.entity.enums.Status;
+import ru.practicum.ewm.entity.enums.RequestStatus;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -17,5 +17,5 @@ public class ParticipationRequestDto implements Serializable {
     private final Long requester;
     private final Long event;
     private final LocalDateTime created;
-    private final Status status;
+    private final RequestStatus status;
 }
