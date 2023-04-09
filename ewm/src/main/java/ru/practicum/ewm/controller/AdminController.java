@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.entity.dto.*;
 import ru.practicum.ewm.entity.enums.State;
 import ru.practicum.ewm.service.CategoryService;
+import ru.practicum.ewm.service.CompilationService;
 import ru.practicum.ewm.service.EventService;
 import ru.practicum.ewm.service.UserService;
 
@@ -25,12 +26,19 @@ public class AdminController {
     private final UserService userService;
     private final CategoryService categoryService;
     private final EventService eventService;
+    private final CompilationService compilationService;
 
     @Autowired
-    public AdminController(UserService userService, CategoryService categoryService, EventService eventService) {
+    public AdminController(
+            UserService userService,
+            CategoryService categoryService,
+            EventService eventService,
+            CompilationService compilationService
+    ) {
         this.userService = userService;
         this.categoryService = categoryService;
         this.eventService = eventService;
+        this.compilationService = compilationService;
     }
 
     @GetMapping("/users")
@@ -77,8 +85,12 @@ public class AdminController {
             @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "10") Integer size
     ) {
-        return eventService.getEvents(userIds, states, categoryIds, rangeStart, rangeEnd, from, size);
+        return eventService.getEventsAdmin(userIds, states, categoryIds, rangeStart, rangeEnd, from, size);
     }
 
-
+    @PostMapping("/compilations")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CompilationDto createCompilation(@Valid @RequestBody NewCompilationDto newCompilationDto) {
+        return compilationService.createCompilation(newCompilationDto);
+    }
 }

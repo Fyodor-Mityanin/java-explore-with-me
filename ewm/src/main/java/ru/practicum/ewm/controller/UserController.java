@@ -6,12 +6,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.entity.dto.EventFullDto;
+import ru.practicum.ewm.entity.dto.EventShortDto;
 import ru.practicum.ewm.entity.dto.NewEventDto;
 import ru.practicum.ewm.entity.dto.ParticipationRequestDto;
 import ru.practicum.ewm.service.EventService;
 import ru.practicum.ewm.service.ParticipationService;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -39,5 +41,14 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public EventFullDto createEvent(@Valid @RequestBody NewEventDto newEventDto, @PathVariable Long userId) {
         return eventService.createEvent(newEventDto, userId);
+    }
+
+    @GetMapping("/{userId}/events")
+    public List<EventShortDto> getEvents(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") Integer from,
+            @RequestParam(defaultValue = "10") Integer size
+    ) {
+        return eventService.getEventsUser(userId, from, size);
     }
 }

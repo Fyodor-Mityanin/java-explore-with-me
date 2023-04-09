@@ -10,6 +10,7 @@ import ru.practicum.ewm.entity.Category;
 import ru.practicum.ewm.entity.Event;
 import ru.practicum.ewm.entity.User;
 import ru.practicum.ewm.entity.dto.EventFullDto;
+import ru.practicum.ewm.entity.dto.EventShortDto;
 import ru.practicum.ewm.entity.dto.NewEventDto;
 import ru.practicum.ewm.entity.dto.UpdateEventAdminRequest;
 import ru.practicum.ewm.entity.enums.State;
@@ -24,6 +25,7 @@ import ru.practicum.ewm.repository.spec.EventSpecification;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EventService {
@@ -98,7 +100,7 @@ public class EventService {
     }
 
 
-    public List<EventFullDto> getEvents(
+    public List<EventFullDto> getEventsAdmin(
             List<Long> userIds,
             List<State> states,
             List<Long> categoryIds,
@@ -118,5 +120,11 @@ public class EventService {
         }
         Page<Event> events1 = eventRepository.findAll(spec, pageable);
         return EventMapper.toDtos(events1.toList());
+    }
+
+    public List<EventShortDto> getEventsUser(Long userId, Integer from, Integer size) {
+        Pageable pageable = PageRequest.of(from, size);
+        Page<Event> events = eventRepository.findByInitiator_Id(userId, pageable);
+        return events.stream().map(EventMapper::toShortDto).collect(Collectors.toList());
     }
 }
