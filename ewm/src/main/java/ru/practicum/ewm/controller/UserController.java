@@ -5,10 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.ewm.entity.dto.EventFullDto;
-import ru.practicum.ewm.entity.dto.EventShortDto;
-import ru.practicum.ewm.entity.dto.NewEventDto;
-import ru.practicum.ewm.entity.dto.ParticipationRequestDto;
+import ru.practicum.ewm.entity.dto.*;
 import ru.practicum.ewm.service.EventService;
 import ru.practicum.ewm.service.ParticipationService;
 
@@ -50,5 +47,23 @@ public class UserController {
             @RequestParam(defaultValue = "10") Integer size
     ) {
         return eventService.getEventsUser(userId, from, size);
+    }
+
+    @PatchMapping("/{userId}/events/{eventId}/requests")
+    public EventRequestStatusUpdateResult updateEventStatus(
+            @Valid @RequestBody EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest,
+            @PathVariable Long userId,
+            @PathVariable Long eventId
+    ) {
+        return participationService.updateRequestStatus(eventRequestStatusUpdateRequest, userId, eventId);
+    }
+
+    @PatchMapping("/{userId}/events/{eventId}")
+    public EventFullDto patchEvent(
+            @Valid @RequestBody UpdateEventUserRequest updateEventUserRequest,
+            @PathVariable Long userId,
+            @PathVariable Long eventId
+    ) {
+        return eventService.patchEventUser(updateEventUserRequest, userId, eventId);
     }
 }

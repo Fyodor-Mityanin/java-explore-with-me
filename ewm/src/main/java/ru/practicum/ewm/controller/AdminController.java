@@ -72,7 +72,7 @@ public class AdminController {
             @Valid @RequestBody UpdateEventAdminRequest updateEventAdminRequest,
             @PathVariable Long eventId
     ) {
-        return eventService.patchEvent(updateEventAdminRequest, eventId);
+        return eventService.patchEventAdmin(updateEventAdminRequest, eventId);
     }
 
     @GetMapping("/events")
@@ -93,4 +93,14 @@ public class AdminController {
     public CompilationDto createCompilation(@Valid @RequestBody NewCompilationDto newCompilationDto) {
         return compilationService.createCompilation(newCompilationDto);
     }
+
+    @PatchMapping("/categories/{catId}")
+    public CategoryDto patchCategory(@Valid @RequestBody CategoryDto categoryDto, @PathVariable Long catId) {
+        return categoryService.patchCategory(categoryDto, catId);
+    }
+
+
+
+
+
 }

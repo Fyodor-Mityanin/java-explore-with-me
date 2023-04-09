@@ -40,7 +40,7 @@ public class EventMapper {
                 .annotation(obj.getAnnotation())
                 .description(obj.getDescription())
                 .category(CategoryMapper.toDto(obj.getCategory()))
-                .created(obj.getCreated())
+                .createdOn(obj.getCreated())
                 .eventDate(obj.getEventDate())
                 .initiator(UserMapper.toShortDto(obj.getInitiator()))
                 .location(new Location(obj.getLatitude(), obj.getLongitude()))

@@ -26,22 +26,40 @@ public class EventSpecification {
 
     public static Specification<Event> categoryIn(List<Long> categoryIds) {
         return (root, query, builder) ->
-                categoryIds != null ?
-                        builder.in(root.get("category").in(categoryIds)) :
-                        builder.conjunction();
+                categoryIds != null ? builder.in(root.get("category").in(categoryIds)) : builder.conjunction();
     }
 
     public static Specification<Event> dateAfter(LocalDateTime rangeStart) {
         return (root, query, builder) ->
-                rangeStart != null ?
-                        builder.greaterThan(root.get("eventDate"), rangeStart) :
-                        builder.conjunction();
+                rangeStart != null ? builder.greaterThan(root.get("eventDate"), rangeStart) : builder.conjunction();
     }
 
     public static Specification<Event> dateBefore(LocalDateTime rangeEnd) {
         return (root, query, builder) ->
-                rangeEnd != null ?
-                        builder.lessThan(root.get("eventDate"), rangeEnd) :
+                rangeEnd != null ? builder.lessThan(root.get("eventDate"), rangeEnd) : builder.conjunction();
+    }
+
+    public static Specification<Event> annotationTextLike(String text) {
+        return (root, query, builder) ->
+                text != null ?
+                        builder.like(builder.lower(root.get("annotation")), "%" + text.toLowerCase() + "%") :
                         builder.conjunction();
+    }
+
+    public static Specification<Event> descriptionTextLike(String text) {
+        return (root, query, builder) ->
+                text != null ?
+                        builder.like(builder.lower(root.get("description")), "%" + text.toLowerCase() + "%") :
+                        builder.conjunction();
+    }
+
+    public static Specification<Event> equalPaid(Boolean paid) {
+        return (root, query, builder) ->
+                paid != null ? builder.equal(root.get("paid"), paid) : builder.conjunction();
+    }
+
+    public static Specification<Event> onlyAvailable(Boolean onlyAvailable) {
+        //TODO тут доделать
+        return (root, query, builder) -> builder.conjunction();
     }
 }

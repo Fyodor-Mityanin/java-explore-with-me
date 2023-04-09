@@ -4,17 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.entity.Category;
 import ru.practicum.ewm.entity.Event;
 import ru.practicum.ewm.entity.User;
-import ru.practicum.ewm.entity.dto.EventFullDto;
-import ru.practicum.ewm.entity.dto.EventShortDto;
-import ru.practicum.ewm.entity.dto.NewEventDto;
-import ru.practicum.ewm.entity.dto.UpdateEventAdminRequest;
+import ru.practicum.ewm.entity.dto.*;
+import ru.practicum.ewm.entity.enums.SortType;
 import ru.practicum.ewm.entity.enums.State;
-import ru.practicum.ewm.entity.enums.StateAction;
+import ru.practicum.ewm.entity.enums.StateAdminAction;
+import ru.practicum.ewm.entity.enums.StateUserAction;
 import ru.practicum.ewm.entity.mapper.EventMapper;
 import ru.practicum.ewm.error.exeptions.NotFoundException;
 import ru.practicum.ewm.repository.CategoryRepository;
@@ -54,7 +54,7 @@ public class EventService {
     }
 
     @Transactional
-    public EventFullDto patchEvent(UpdateEventAdminRequest updateEventAdminRequest, Long eventId) {
+    public EventFullDto patchEventAdmin(UpdateEventAdminRequest updateEventAdminRequest, Long eventId) {
         Event event = eventRepository.findById(eventId).orElseThrow(
                 () -> new NotFoundException("Event with id=" + eventId + " was not found")
         );
@@ -91,7 +91,7 @@ public class EventService {
         }
         if (updateEventAdminRequest.getStateAction() != null) {
             event.setState(
-                    updateEventAdminRequest.getStateAction() == StateAction.PUBLISH_EVENT
+                    updateEventAdminRequest.getStateAction() == StateAdminAction.PUBLISH_EVENT
                             ? State.PUBLISHED : State.CANCELED
             );
         }
@@ -118,13 +118,81 @@ public class EventService {
         if (states != null) {
             spec.and(EventSpecification.stateIn(states));
         }
-        Page<Event> events1 = eventRepository.findAll(spec, pageable);
-        return EventMapper.toDtos(events1.toList());
+        Page<Event> events = eventRepository.findAll(spec, pageable);
+        return EventMapper.toDtos(events.toList());
     }
 
     public List<EventShortDto> getEventsUser(Long userId, Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from, size);
         Page<Event> events = eventRepository.findByInitiator_Id(userId, pageable);
         return events.stream().map(EventMapper::toShortDto).collect(Collectors.toList());
+    }
+
+    public List<EventShortDto> getEventsPublic(
+            String text,
+            List<Long> categoryIds,
+            Boolean paid,
+            LocalDateTime rangeStart,
+            LocalDateTime rangeEnd,
+            Boolean onlyAvailable,
+            SortType sort,
+            Integer from,
+            Integer size
+    ) {
+        Pageable pageable = sort != null ? PageRequest.of(from, size, Sort.by(sort.getColumnName())) : PageRequest.of(from, size);
+        Specification<Event> spec = Specification
+                .where(EventSpecification.annotationTextLike(text).or(EventSpecification.descriptionTextLike(text)))
+                .and(EventSpecification.categoryIn(categoryIds))
+                .and(EventSpecification.equalPaid(paid))
+                .and(EventSpecification.dateAfter(rangeStart))
+                .and(EventSpecification.dateBefore(rangeEnd))
+                .and(EventSpecification.onlyAvailable(onlyAvailable));
+        Page<Event> events = eventRepository.findAll(spec, pageable);
+        return EventMapper.toShortDtos(events.toSet());
+    }
+
+    public EventFullDto patchEventUser(UpdateEventUserRequest updateEventUserRequest, Long userId, Long eventId) {
+        Event event = eventRepository.findById(eventId).orElseThrow(
+                () -> new NotFoundException("Event with id=" + eventId + " was not found")
+        );
+        if (updateEventUserRequest.getAnnotation() != null) {
+            event.setAnnotation(updateEventUserRequest.getAnnotation());
+        }
+        if (updateEventUserRequest.getCategory() != null) {
+            Category category = categoryRepository.findById(updateEventUserRequest.getCategory()).orElseThrow(
+                    () -> new NotFoundException("Category with id=" + updateEventUserRequest.getCategory() + " was not found")
+            );
+            event.setCategory(category);
+        }
+        if (updateEventUserRequest.getDescription() != null) {
+            event.setDescription(updateEventUserRequest.getDescription());
+        }
+        if (updateEventUserRequest.getEventDate() != null) {
+            event.setEventDate(updateEventUserRequest.getEventDate());
+        }
+        if (updateEventUserRequest.getLocation() != null) {
+            event.setLongitude(updateEventUserRequest.getLocation().getLon());
+            event.setLatitude(updateEventUserRequest.getLocation().getLat());
+        }
+        if (updateEventUserRequest.getPaid() != null) {
+            event.setPaid(updateEventUserRequest.getPaid());
+        }
+        if (updateEventUserRequest.getParticipantLimit() != null) {
+            event.setParticipantLimit(updateEventUserRequest.getParticipantLimit());
+        }
+        if (updateEventUserRequest.getRequestModeration() != null) {
+            event.setRequestModeration(updateEventUserRequest.getRequestModeration());
+        }
+        if (updateEventUserRequest.getTitle() != null) {
+            event.setTitle(updateEventUserRequest.getTitle());
+        }
+        if (updateEventUserRequest.getStateAction() != null) {
+            event.setState(
+                    updateEventUserRequest.getStateAction() == StateUserAction.SEND_TO_REVIEW
+                            ? State.PENDING : State.CANCELED
+            );
+        }
+        event = eventRepository.save(event);
+        return EventMapper.toDto(event);
     }
 }

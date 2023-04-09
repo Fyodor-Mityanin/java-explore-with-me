@@ -19,7 +19,7 @@ public class EventFullDto implements Serializable {
     private final String annotation;
     private final String description;
     private final CategoryDto category;
-    private final LocalDateTime created;
+    private final LocalDateTime createdOn;
     private final LocalDateTime eventDate;
     private final UserShortDto initiator;
     private final Location location;

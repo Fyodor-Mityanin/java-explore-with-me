@@ -3,14 +3,14 @@ package ru.practicum.ewm.entity.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.ewm.entity.enums.StateAdminAction;
+import ru.practicum.ewm.entity.enums.StateUserAction;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
-public class UpdateEventAdminRequest implements Serializable {
+public class UpdateEventUserRequest implements Serializable {
     private String annotation;
     private Long category;
     private String description;
@@ -20,6 +20,6 @@ public class UpdateEventAdminRequest implements Serializable {
     private Boolean paid;
     private Integer participantLimit;
     private Boolean requestModeration;
-    private StateAdminAction stateAction;
+    private StateUserAction stateAction;
     private String title;
 }

@@ -8,6 +8,7 @@ import ru.practicum.ewm.entity.Category;
 import ru.practicum.ewm.entity.dto.CategoryDto;
 import ru.practicum.ewm.entity.dto.NewCategoryDto;
 import ru.practicum.ewm.entity.mapper.CategoryMapper;
+import ru.practicum.ewm.error.exeptions.NotFoundException;
 import ru.practicum.ewm.repository.CategoryRepository;
 
 import java.util.List;
@@ -33,5 +34,14 @@ public class CategoryService {
         PageRequest pageable = PageRequest.of(from, size);
         Page<Category> categories = categoryRepository.findAll(pageable);
         return CategoryMapper.toDtos(categories.toList());
+    }
+
+    public CategoryDto patchCategory(CategoryDto categoryDto, Long catId) {
+        Category category = categoryRepository.findById(catId).orElseThrow(
+                () -> new NotFoundException("Category with id=" + catId + " was not found")
+        );
+        category.setName(categoryDto.getName());
+        category = categoryRepository.save(category);
+        return CategoryMapper.toDto(category);
     }
 }

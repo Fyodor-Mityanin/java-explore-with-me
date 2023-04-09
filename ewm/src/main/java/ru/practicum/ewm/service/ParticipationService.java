@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import ru.practicum.ewm.entity.Event;
 import ru.practicum.ewm.entity.Participation;
 import ru.practicum.ewm.entity.User;
+import ru.practicum.ewm.entity.dto.EventRequestStatusUpdateRequest;
+import ru.practicum.ewm.entity.dto.EventRequestStatusUpdateResult;
 import ru.practicum.ewm.entity.dto.ParticipationRequestDto;
 import ru.practicum.ewm.entity.enums.Status;
 import ru.practicum.ewm.entity.mapper.ParticipationMapper;
@@ -41,5 +43,16 @@ public class ParticipationService {
         Participation participation = ParticipationMapper.toObject(event, requester, Status.PENDING);
         participation = participationRepository.save(participation);
         return ParticipationMapper.toDto(participation);
+    }
+
+
+    public EventRequestStatusUpdateResult updateRequestStatus(
+            EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest,
+            Long userId,
+            Long eventId
+    ) {
+
+
+        return null;
     }
 }
