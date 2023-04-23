@@ -33,7 +33,9 @@ public class CategoryService {
 
     public CategoryDto createCategory(NewCategoryDto newCategoryDto) {
         categoryRepository.findByNameIgnoreCase(newCategoryDto.getName()).ifPresent(
-                cat -> {throw new ConflictException("Category with name=" + newCategoryDto.getName() + " already exist");}
+                cat -> {
+                    throw new ConflictException("Category with name=" + newCategoryDto.getName() + " already exist");
+                }
         );
         Category category = CategoryMapper.toObject(newCategoryDto);
         category = categoryRepository.save(category);
@@ -52,7 +54,9 @@ public class CategoryService {
                 () -> new NotFoundException("Category with id=" + catId + " was not found")
         );
         categoryRepository.findByNameIgnoreCase(categoryDto.getName()).ifPresent(
-                cat -> {throw new ConflictException("Category with name=" + categoryDto.getName() + " already exist");}
+                cat -> {
+                    throw new ConflictException("Category with name=" + categoryDto.getName() + " already exist");
+                }
         );
         category.setName(categoryDto.getName());
         category = categoryRepository.save(category);

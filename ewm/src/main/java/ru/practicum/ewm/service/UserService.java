@@ -37,7 +37,9 @@ public class UserService {
 
     public UserDto createUser(UserRequestDto userRequestDto) {
         userRepository.findByNameIgnoreCase(userRequestDto.getName()).ifPresent(
-                cat -> {throw new ConflictException("User with name=" + userRequestDto.getName() + " already exist");}
+                cat -> {
+                    throw new ConflictException("User with name=" + userRequestDto.getName() + " already exist");
+                }
         );
         User user = UserMapper.toObject(userRequestDto);
         user = userRepository.save(user);
