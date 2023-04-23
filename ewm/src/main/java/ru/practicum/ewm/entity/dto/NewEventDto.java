@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.ewm.entity.Event;
 
+import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -19,11 +20,10 @@ public class NewEventDto implements Serializable {
     @Size(max = 255)
     @NotNull
     private String title;
-    @NotNull
     private String annotation;
-    @NotNull
     private String description;
     private Long category;
+    @Future
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
     @NotNull

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "participations")
+@Table(name = "participations", uniqueConstraints = {@UniqueConstraint(columnNames = {"requester", "event"})})
 public class Participation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

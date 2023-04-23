@@ -9,6 +9,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.entity.dto.*;
 import ru.practicum.ewm.entity.enums.State;
+import ru.practicum.ewm.error.exeptions.BadRequestException;
 import ru.practicum.ewm.service.CategoryService;
 import ru.practicum.ewm.service.CompilationService;
 import ru.practicum.ewm.service.EventService;
@@ -59,8 +60,12 @@ public class AdminController {
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto createUser(@Valid @RequestBody UserRequestDto userRequestDto) {
+        if (userRequestDto.getName() == null) {
+            throw new BadRequestException("UserRequestDto is empty");
+        }
         return userService.createUser(userRequestDto);
     }
+
 
     @PatchMapping("/events/{eventId}")
     @ResponseStatus(HttpStatus.CREATED)
@@ -87,6 +92,9 @@ public class AdminController {
     @PostMapping("/compilations")
     @ResponseStatus(HttpStatus.CREATED)
     public CompilationDto createCompilation(@Valid @RequestBody NewCompilationDto newCompilationDto) {
+        if (newCompilationDto.getTitle() == null) {
+            throw new BadRequestException("NewCompilationDto.title is empty");
+        }
         return compilationService.createCompilation(newCompilationDto);
     }
 
@@ -94,11 +102,17 @@ public class AdminController {
     @PostMapping("/categories")
     @ResponseStatus(HttpStatus.CREATED)
     public CategoryDto createCategory(@Valid @RequestBody NewCategoryDto newCategoryDto) {
+        if (newCategoryDto.getName() == null) {
+            throw new BadRequestException("NewCategoryDto.name is empty");
+        }
         return categoryService.createCategory(newCategoryDto);
     }
 
     @PatchMapping("/categories/{catId}")
     public CategoryDto patchCategory(@Valid @RequestBody CategoryDto categoryDto, @PathVariable Long catId) {
+        if (categoryDto.getId() == null && categoryDto.getName() == null) {
+            throw new BadRequestException("CategoryDto is empty");
+        }
         return categoryService.patchCategory(categoryDto, catId);
     }
 

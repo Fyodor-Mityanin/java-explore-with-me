@@ -16,6 +16,7 @@ import ru.practicum.ewm.entity.enums.State;
 import ru.practicum.ewm.entity.enums.StateAdminAction;
 import ru.practicum.ewm.entity.enums.StateUserAction;
 import ru.practicum.ewm.entity.mapper.EventMapper;
+import ru.practicum.ewm.error.exeptions.ConflictException;
 import ru.practicum.ewm.error.exeptions.NotFoundException;
 import ru.practicum.ewm.repository.CategoryRepository;
 import ru.practicum.ewm.repository.EventRepository;
@@ -90,6 +91,12 @@ public class EventService {
             event.setTitle(updateEventAdminRequest.getTitle());
         }
         if (updateEventAdminRequest.getStateAction() != null) {
+            if (event.getState() != State.PENDING && updateEventAdminRequest.getStateAction() == StateAdminAction.PUBLISH_EVENT) {
+                throw new ConflictException("This event already published or canceled");
+            }
+            if (event.getState() == State.PUBLISHED && updateEventAdminRequest.getStateAction() == StateAdminAction.REJECT_EVENT) {
+                throw new ConflictException("This event already published, you cant reject it");
+            }
             event.setState(
                     updateEventAdminRequest.getStateAction() == StateAdminAction.PUBLISH_EVENT
                             ? State.PUBLISHED : State.CANCELED
@@ -155,6 +162,9 @@ public class EventService {
         Event event = eventRepository.findById(eventId).orElseThrow(
                 () -> new NotFoundException("Event with id=" + eventId + " was not found")
         );
+        if (event.getState() == State.PUBLISHED) {
+            throw new ConflictException("Event already published");
+        }
         if (updateEventUserRequest.getAnnotation() != null) {
             event.setAnnotation(updateEventUserRequest.getAnnotation());
         }

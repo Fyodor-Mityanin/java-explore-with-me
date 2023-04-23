@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.entity.dto.*;
+import ru.practicum.ewm.error.exeptions.BadRequestException;
 import ru.practicum.ewm.service.EventService;
 import ru.practicum.ewm.service.ParticipationService;
 
@@ -37,6 +38,9 @@ public class UserController {
     @PostMapping("/{userId}/events")
     @ResponseStatus(HttpStatus.CREATED)
     public EventFullDto createEvent(@Valid @RequestBody NewEventDto newEventDto, @PathVariable Long userId) {
+        if (newEventDto.getAnnotation() == null || newEventDto.getDescription() == null) {
+            throw new BadRequestException("NewEventDto.annotation is empty");
+        }
         return eventService.createEvent(newEventDto, userId);
     }
 

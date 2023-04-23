@@ -68,4 +68,11 @@ public class CategoryService {
         }
 
     }
+
+    public CategoryDto getCategoryById(Long catId) {
+        Category category = categoryRepository.findById(catId).orElseThrow(
+                () -> new NotFoundException("Category with id=" + catId + " was not found")
+        );
+        return CategoryMapper.toDto(category);
+    }
 }

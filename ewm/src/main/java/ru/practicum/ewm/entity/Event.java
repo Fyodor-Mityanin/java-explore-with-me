@@ -8,6 +8,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -72,4 +74,7 @@ public class Event {
     @Column(name = "state")
     @Enumerated(EnumType.STRING)
     private State state;
+
+    @OneToMany(mappedBy = "event")
+    private Set<Participation> participations = new LinkedHashSet<>();
 }

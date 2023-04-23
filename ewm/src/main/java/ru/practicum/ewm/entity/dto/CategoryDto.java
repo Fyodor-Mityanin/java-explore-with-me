@@ -3,7 +3,6 @@ package ru.practicum.ewm.entity.dto;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 
@@ -15,6 +14,5 @@ import java.io.Serializable;
 public class CategoryDto implements Serializable {
     private final Long id;
     @Size(max = 255)
-    @NotNull
     private final String name;
 }
