@@ -35,6 +35,25 @@ public class UserController {
         return participationService.createParticipation(userId, eventId);
     }
 
+    @GetMapping("/{userId}/requests")
+    public List<ParticipationRequestDto> getParticipation(@PathVariable Long userId) {
+        return participationService.getParticipationsByUserId(userId);
+    }
+
+    @PatchMapping("/{userId}/requests/{requestId}/cancel")
+    public ParticipationRequestDto cancelParticipation(@PathVariable Long userId, @PathVariable Long requestId) {
+        return participationService.cancelParticipation(userId, requestId);
+    }
+
+    @GetMapping("/{userId}/events/{eventId}/requests")
+    @SuppressWarnings("unused")
+    public List<ParticipationRequestDto> getEventRequests(
+            @PathVariable Long userId,
+            @PathVariable Long eventId
+    ) {
+        return participationService.getParticipationsByUserIdAndEventId(eventId);
+    }
+
     @PostMapping("/{userId}/events")
     @ResponseStatus(HttpStatus.CREATED)
     public EventFullDto createEvent(@Valid @RequestBody NewEventDto newEventDto, @PathVariable Long userId) {
@@ -51,6 +70,15 @@ public class UserController {
             @RequestParam(defaultValue = "10") Integer size
     ) {
         return eventService.getEventsUser(userId, from, size);
+    }
+
+    @GetMapping("/{userId}/events/{eventId}")
+    @SuppressWarnings("unused")
+    public EventFullDto getEvents(
+            @PathVariable Long userId,
+            @PathVariable Long eventId
+    ) {
+        return eventService.getEventById(eventId);
     }
 
     @PatchMapping("/{userId}/events/{eventId}/requests")

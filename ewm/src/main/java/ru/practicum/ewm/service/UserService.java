@@ -43,4 +43,8 @@ public class UserService {
         user = userRepository.save(user);
         return UserMapper.toDto(user);
     }
+
+    public void deleteUser(Long usersId) {
+        userRepository.deleteById(usersId);
+    }
 }

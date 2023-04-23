@@ -8,7 +8,9 @@ import ru.practicum.ewm.entity.Compilation;
 import ru.practicum.ewm.entity.Event;
 import ru.practicum.ewm.entity.dto.CompilationDto;
 import ru.practicum.ewm.entity.dto.NewCompilationDto;
+import ru.practicum.ewm.entity.dto.UpdateCompilationRequest;
 import ru.practicum.ewm.entity.mapper.CompilationMapper;
+import ru.practicum.ewm.error.exeptions.NotFoundException;
 import ru.practicum.ewm.repository.CompilationRepository;
 import ru.practicum.ewm.repository.EventRepository;
 
@@ -36,6 +38,36 @@ public class CompilationService {
     public CompilationDto createCompilation(NewCompilationDto newCompilationDto) {
         Set<Event> events = eventRepository.findByIdIn(newCompilationDto.getEvents());
         Compilation compilation = CompilationMapper.toObject(newCompilationDto, events);
+        compilation = compilationRepository.save(compilation);
+        return CompilationMapper.toDto(compilation);
+    }
+
+    public CompilationDto getCompilationById(Long compilationId) {
+        Compilation compilation = compilationRepository.findById(compilationId).orElseThrow(
+                () -> new NotFoundException("Compilation with id=" + compilationId + " was not found")
+        );
+        return CompilationMapper.toDto(compilation);
+    }
+
+    public void deleteById(Long compilationId) {
+        compilationRepository.deleteById(compilationId);
+    }
+
+    public CompilationDto updateCompilation(Long compilationId, UpdateCompilationRequest request) {
+        Compilation compilation = compilationRepository.findById(compilationId).orElseThrow(
+                () -> new NotFoundException("Compilation with id=" + compilationId + " was not found")
+        );
+        if (request.getTitle() != null) {
+            compilation.setTitle(request.getTitle());
+        }
+        if (request.getPinned() != null) {
+            compilation.setPinned(request.getPinned());
+        }
+        if (request.getEvents() != null && request.getEvents().size() > 0) {
+            Set<Event> events = eventRepository.findByIdIn(request.getEvents());
+            compilation.setEvents(events);
+        }
+        compilation = compilationRepository.save(compilation);
         return CompilationMapper.toDto(compilation);
     }
 }

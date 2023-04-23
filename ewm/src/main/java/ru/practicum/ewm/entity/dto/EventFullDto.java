@@ -1,5 +1,6 @@
 package ru.practicum.ewm.entity.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
 import ru.practicum.ewm.entity.Event;
@@ -19,7 +20,9 @@ public class EventFullDto implements Serializable {
     private final String annotation;
     private final String description;
     private final CategoryDto category;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private final LocalDateTime createdOn;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private final LocalDateTime eventDate;
     private final UserShortDto initiator;
     private final Location location;
@@ -28,4 +31,6 @@ public class EventFullDto implements Serializable {
     private final LocalDateTime publishedOn;
     private final Boolean requestModeration;
     private final State state;
+    private final Integer views;
+    private final Integer confirmedRequests;
 }

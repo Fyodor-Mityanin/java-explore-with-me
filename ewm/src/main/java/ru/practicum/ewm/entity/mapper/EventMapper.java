@@ -63,7 +63,7 @@ public class EventMapper {
                 .id(obj.getId())
                 .annotation(obj.getAnnotation())
                 .category(CategoryMapper.toDto(obj.getCategory()))
-                .confirmedRequest(0)
+                .confirmedRequests(0)
                 .eventDate(obj.getEventDate())
                 .initiator(UserMapper.toShortDto(obj.getInitiator()))
                 .paid(obj.getPaid())

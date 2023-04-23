@@ -66,9 +66,13 @@ public class AdminController {
         return userService.createUser(userRequestDto);
     }
 
+    @DeleteMapping("/users/{usersId}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long usersId) {
+        userService.deleteUser(usersId);
+        return ResponseEntity.noContent().build();
+    }
 
     @PatchMapping("/events/{eventId}")
-    @ResponseStatus(HttpStatus.CREATED)
     public EventFullDto patchEvent(
             @Valid @RequestBody UpdateEventAdminRequest updateEventAdminRequest,
             @PathVariable Long eventId
@@ -98,6 +102,20 @@ public class AdminController {
         return compilationService.createCompilation(newCompilationDto);
     }
 
+    @DeleteMapping("/compilations/{compilationId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Void> deleteCompilation(@PathVariable Long compilationId) {
+        compilationService.deleteById(compilationId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/compilations/{compilationId}")
+    public CompilationDto updateCompilation(
+            @PathVariable Long compilationId,
+            @Valid @RequestBody UpdateCompilationRequest request
+    ) {
+        return compilationService.updateCompilation(compilationId, request);
+    }
 
     @PostMapping("/categories")
     @ResponseStatus(HttpStatus.CREATED)

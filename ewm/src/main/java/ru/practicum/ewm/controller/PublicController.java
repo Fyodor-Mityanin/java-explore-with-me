@@ -6,6 +6,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.entity.dto.CategoryDto;
 import ru.practicum.ewm.entity.dto.CompilationDto;
+import ru.practicum.ewm.entity.dto.EventFullDto;
 import ru.practicum.ewm.entity.dto.EventShortDto;
 import ru.practicum.ewm.entity.enums.SortType;
 import ru.practicum.ewm.service.CategoryService;
@@ -57,6 +58,11 @@ public class PublicController {
         return compilationService.getCompilationsPublic(pinned, from, size);
     }
 
+    @GetMapping("/compilations/{compilationsId}")
+    public CompilationDto getCompilation(@PathVariable Long compilationsId) {
+        return compilationService.getCompilationById(compilationsId);
+    }
+
     @GetMapping("/events")
     public List<EventShortDto> getEvents(
             @RequestParam(required = false) String text,
@@ -72,6 +78,8 @@ public class PublicController {
         return eventService.getEventsPublic(text, categoryIds, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
     }
 
-
-
+    @GetMapping("/events/{eventsId}")
+    public EventFullDto getEvent(@PathVariable Long eventsId) {
+        return eventService.getEventById(eventsId);
+    }
 }

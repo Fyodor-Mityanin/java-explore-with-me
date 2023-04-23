@@ -88,4 +88,26 @@ public class ParticipationService {
                 .build();
 
     }
+
+    public List<ParticipationRequestDto> getParticipationsByUserId(Long userId) {
+        List<Participation> participations = participationRepository.findByRequester_Id(userId);
+        return ParticipationMapper.toDtos(participations);
+    }
+
+    public List<ParticipationRequestDto> getParticipationsByUserIdAndEventId(Long eventId) {
+        List<Participation> participations = participationRepository.findByEvent_Id(eventId);
+        return ParticipationMapper.toDtos(participations);
+    }
+
+    public ParticipationRequestDto cancelParticipation(Long userId, Long requestId) {
+        Participation participation = participationRepository.findById(requestId).orElseThrow(
+                () -> new NotFoundException("Participation with id=" + requestId + " was not found")
+        );
+        if (!Objects.equals(participation.getRequester().getId(), userId)) {
+            throw new ConflictException("Forbidden");
+        }
+        participation.setStatus(RequestStatus.CANCELED);
+        participation = participationRepository.save(participation);
+        return ParticipationMapper.toDto(participation);
+    }
 }

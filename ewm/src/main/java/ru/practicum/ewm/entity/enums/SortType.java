@@ -1,7 +1,7 @@
 package ru.practicum.ewm.entity.enums;
 
 public enum SortType {
-    EVENT_DATE("event_date"),
+    EVENT_DATE("eventDate"),
     VIEWS("views");
 
     private final String columnName;

@@ -116,7 +116,8 @@ public class EventService {
             Integer from,
             Integer size
     ) {
-        Pageable pageable = PageRequest.of(from, size);
+        Sort sort = Sort.by(Sort.Direction.DESC, "eventDate");
+        Pageable pageable = PageRequest.of(from, size, sort);
         Specification<Event> spec = Specification
                 .where(EventSpecification.userIn(userIds))
                 .and(EventSpecification.categoryIn(categoryIds))
@@ -146,7 +147,7 @@ public class EventService {
             Integer from,
             Integer size
     ) {
-        Pageable pageable = sort != null ? PageRequest.of(from, size, Sort.by(sort.getColumnName())) : PageRequest.of(from, size);
+        Pageable pageable = sort != null ? PageRequest.of(from, size, Sort.by(Sort.Direction.DESC, sort.getColumnName())) : PageRequest.of(from, size);
         Specification<Event> spec = Specification
                 .where(EventSpecification.annotationTextLike(text).or(EventSpecification.descriptionTextLike(text)))
                 .and(EventSpecification.categoryIn(categoryIds))
@@ -158,6 +159,7 @@ public class EventService {
         return EventMapper.toShortDtos(events.toSet());
     }
 
+    @SuppressWarnings("unused")
     public EventFullDto patchEventUser(UpdateEventUserRequest updateEventUserRequest, Long userId, Long eventId) {
         Event event = eventRepository.findById(eventId).orElseThrow(
                 () -> new NotFoundException("Event with id=" + eventId + " was not found")
@@ -203,6 +205,13 @@ public class EventService {
             );
         }
         event = eventRepository.save(event);
+        return EventMapper.toDto(event);
+    }
+
+    public EventFullDto getEventById(Long eventId) {
+        Event event = eventRepository.findById(eventId).orElseThrow(
+                () -> new NotFoundException("Event with id=" + eventId + " was not found")
+        );
         return EventMapper.toDto(event);
     }
 }

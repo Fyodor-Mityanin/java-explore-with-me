@@ -66,7 +66,6 @@ public class CategoryService {
         } else {
             throw new ConflictException("Category with id=" + catId + " has events");
         }
-
     }
 
     public CategoryDto getCategoryById(Long catId) {
