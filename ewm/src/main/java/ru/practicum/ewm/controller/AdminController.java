@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.entity.dto.*;
@@ -41,6 +42,7 @@ public class AdminController {
         this.compilationService = compilationService;
     }
 
+
     @GetMapping("/users")
     public List<UserDto> getUsers(
             @RequestParam(required = false) List<Long> ids,
@@ -58,12 +60,6 @@ public class AdminController {
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto createUser(@Valid @RequestBody UserRequestDto userRequestDto) {
         return userService.createUser(userRequestDto);
-    }
-
-    @PostMapping("/categories")
-    @ResponseStatus(HttpStatus.CREATED)
-    public CategoryDto createCategory(@Valid @RequestBody NewCategoryDto newCategoryDto) {
-        return categoryService.createCategory(newCategoryDto);
     }
 
     @PatchMapping("/events/{eventId}")
@@ -94,13 +90,21 @@ public class AdminController {
         return compilationService.createCompilation(newCompilationDto);
     }
 
+
+    @PostMapping("/categories")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CategoryDto createCategory(@Valid @RequestBody NewCategoryDto newCategoryDto) {
+        return categoryService.createCategory(newCategoryDto);
+    }
+
     @PatchMapping("/categories/{catId}")
     public CategoryDto patchCategory(@Valid @RequestBody CategoryDto categoryDto, @PathVariable Long catId) {
         return categoryService.patchCategory(categoryDto, catId);
     }
 
-
-
-
-
+    @DeleteMapping("/categories/{catId}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long catId) {
+        categoryService.deleteCategory(catId);
+        return ResponseEntity.noContent().build();
+    }
 }

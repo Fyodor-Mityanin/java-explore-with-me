@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Builder
 public class ApiError {
     private HttpStatus status;
-    private Throwable reason;
+    private String reason;
     private String message;
     private LocalDateTime timestamp;
 }

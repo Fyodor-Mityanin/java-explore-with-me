@@ -9,6 +9,7 @@ import ru.practicum.ewm.entity.User;
 import ru.practicum.ewm.entity.dto.UserDto;
 import ru.practicum.ewm.entity.dto.UserRequestDto;
 import ru.practicum.ewm.entity.mapper.UserMapper;
+import ru.practicum.ewm.error.exeptions.ConflictException;
 import ru.practicum.ewm.repository.UserRepository;
 
 import java.util.List;
@@ -35,6 +36,9 @@ public class UserService {
     }
 
     public UserDto createUser(UserRequestDto userRequestDto) {
+        userRepository.findByNameIgnoreCase(userRequestDto.getName()).ifPresent(
+                cat -> {throw new ConflictException("User with name=" + userRequestDto.getName() + " already exist");}
+        );
         User user = UserMapper.toObject(userRequestDto);
         user = userRepository.save(user);
         return UserMapper.toDto(user);

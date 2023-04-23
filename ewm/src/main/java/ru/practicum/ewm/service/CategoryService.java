@@ -5,11 +5,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.entity.Category;
+import ru.practicum.ewm.entity.Event;
 import ru.practicum.ewm.entity.dto.CategoryDto;
 import ru.practicum.ewm.entity.dto.NewCategoryDto;
 import ru.practicum.ewm.entity.mapper.CategoryMapper;
+import ru.practicum.ewm.error.exeptions.ConflictException;
 import ru.practicum.ewm.error.exeptions.NotFoundException;
 import ru.practicum.ewm.repository.CategoryRepository;
+import ru.practicum.ewm.repository.EventRepository;
 
 import java.util.List;
 
@@ -17,13 +20,21 @@ import java.util.List;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final EventRepository eventRepository;
 
     @Autowired
-    public CategoryService(CategoryRepository categoryRepository) {
+    public CategoryService(
+            CategoryRepository categoryRepository,
+            EventRepository eventRepository
+    ) {
         this.categoryRepository = categoryRepository;
+        this.eventRepository = eventRepository;
     }
 
     public CategoryDto createCategory(NewCategoryDto newCategoryDto) {
+        categoryRepository.findByNameIgnoreCase(newCategoryDto.getName()).ifPresent(
+                cat -> {throw new ConflictException("Category with name=" + newCategoryDto.getName() + " already exist");}
+        );
         Category category = CategoryMapper.toObject(newCategoryDto);
         category = categoryRepository.save(category);
         return CategoryMapper.toDto(category);
@@ -40,8 +51,21 @@ public class CategoryService {
         Category category = categoryRepository.findById(catId).orElseThrow(
                 () -> new NotFoundException("Category with id=" + catId + " was not found")
         );
+        categoryRepository.findByNameIgnoreCase(categoryDto.getName()).ifPresent(
+                cat -> {throw new ConflictException("Category with name=" + categoryDto.getName() + " already exist");}
+        );
         category.setName(categoryDto.getName());
         category = categoryRepository.save(category);
         return CategoryMapper.toDto(category);
+    }
+
+    public void deleteCategory(Long catId) {
+        List<Event> events = eventRepository.findByCategory_Id(catId);
+        if (events.size() == 0) {
+            categoryRepository.deleteById(catId);
+        } else {
+            throw new ConflictException("Category with id=" + catId + " has events");
+        }
+
     }
 }
