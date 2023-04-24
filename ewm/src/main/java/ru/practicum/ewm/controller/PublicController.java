@@ -78,8 +78,10 @@ public class PublicController {
             @RequestParam(defaultValue = "false") Boolean onlyAvailable,
             @RequestParam(required = false) SortType sort,
             @RequestParam(defaultValue = "0") Integer from,
-            @RequestParam(defaultValue = "10") Integer size
+            @RequestParam(defaultValue = "10") Integer size,
+            HttpServletRequest request
     ) {
+        statisticService.hit(request);
         return eventService.getEventsPublic(text, categoryIds, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
     }
 
