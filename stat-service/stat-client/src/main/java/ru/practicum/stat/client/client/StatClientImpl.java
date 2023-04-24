@@ -14,10 +14,10 @@ import java.util.List;
 
 @Component
 public class StatClientImpl implements StatClient {
-    private final RestTemplate restTemplate;
 
     private final static String SERVICE_URL = "http://localhost:9090";
 
+    private final RestTemplate restTemplate;
 
     public StatClientImpl() {
         RestTemplateBuilder builder = new RestTemplateBuilder();
@@ -49,7 +49,8 @@ public class StatClientImpl implements StatClient {
                         uriBuilder.toUriString(),
                         HttpMethod.GET,
                         null,
-                        new ParameterizedTypeReference<>() {}
+                        new ParameterizedTypeReference<>() {
+                        }
                 );
         return responseEntity.getBody();
     }
