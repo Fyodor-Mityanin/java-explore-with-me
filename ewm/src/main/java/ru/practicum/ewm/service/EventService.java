@@ -116,8 +116,7 @@ public class EventService {
             Integer from,
             Integer size
     ) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "eventDate");
-        Pageable pageable = PageRequest.of(from, size, sort);
+        Pageable pageable = PageRequest.of(from, size);
         Specification<Event> spec = Specification
                 .where(EventSpecification.userIn(userIds))
                 .and(EventSpecification.categoryIn(categoryIds))
