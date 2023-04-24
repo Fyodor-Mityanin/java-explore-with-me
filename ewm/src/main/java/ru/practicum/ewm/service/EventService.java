@@ -108,7 +108,7 @@ public class EventService {
 
 
     public List<EventFullDto> getEventsAdmin(
-            List<Long> userIds,
+            List<Long> users,
             List<State> states,
             List<Long> categoryIds,
             LocalDateTime rangeStart,
@@ -118,7 +118,7 @@ public class EventService {
     ) {
         Pageable pageable = PageRequest.of(from, size);
         Specification<Event> spec = Specification
-                .where(EventSpecification.userIn(userIds))
+                .where(EventSpecification.userIn(users))
                 .and(EventSpecification.categoryIn(categoryIds))
                 .and(EventSpecification.dateAfter(rangeStart))
                 .and(EventSpecification.dateBefore(rangeEnd));

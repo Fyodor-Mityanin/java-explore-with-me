@@ -82,7 +82,7 @@ public class AdminController {
 
     @GetMapping("/events")
     public List<EventFullDto> getEvents(
-            @RequestParam(required = false) List<Long> userIds,
+            @RequestParam(required = false) List<Long> users,
             @RequestParam(required = false) List<State> states,
             @RequestParam(required = false) List<Long> categoryIds,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
@@ -90,7 +90,7 @@ public class AdminController {
             @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "10") Integer size
     ) {
-        return eventService.getEventsAdmin(userIds, states, categoryIds, rangeStart, rangeEnd, from, size);
+        return eventService.getEventsAdmin(users, states, categoryIds, rangeStart, rangeEnd, from, size);
     }
 
     @PostMapping("/compilations")

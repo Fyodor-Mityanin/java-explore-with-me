@@ -13,20 +13,20 @@ public class EventSpecification {
     public static Specification<Event> userIn(List<Long> userIds) {
         return (root, query, builder) ->
                 userIds != null ?
-                        builder.in(root.get("initiator").in(userIds)) :
+                        root.get("initiator").in(userIds) :
                         builder.conjunction();
     }
 
     public static Specification<Event> stateIn(List<State> states) {
         return (root, query, builder) -> {
             List<String> statesString = states.stream().map(Enum::toString).collect(Collectors.toList());
-            return builder.in(root.get("state").in(statesString));
+            return root.get("state").in(statesString);
         };
     }
 
     public static Specification<Event> categoryIn(List<Long> categoryIds) {
         return (root, query, builder) ->
-                categoryIds != null ? builder.in(root.get("category").in(categoryIds)) : builder.conjunction();
+                categoryIds != null ? root.get("category").in(categoryIds) : builder.conjunction();
     }
 
     public static Specification<Event> dateAfter(LocalDateTime rangeStart) {
