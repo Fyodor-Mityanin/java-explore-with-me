@@ -15,7 +15,7 @@ import java.util.List;
 @Component
 public class StatClientImpl implements StatClient {
 
-    private final static String SERVICE_URL = "http://localhost:9090";
+    private static final String SERVICE_URL = "http://localhost:9090";
 
     private final RestTemplate restTemplate;
 
