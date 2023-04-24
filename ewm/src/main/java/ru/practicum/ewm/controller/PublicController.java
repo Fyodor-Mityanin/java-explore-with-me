@@ -12,7 +12,9 @@ import ru.practicum.ewm.entity.enums.SortType;
 import ru.practicum.ewm.service.CategoryService;
 import ru.practicum.ewm.service.CompilationService;
 import ru.practicum.ewm.service.EventService;
+import ru.practicum.ewm.service.StatisticService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,15 +27,18 @@ public class PublicController {
     private final CategoryService categoryService;
     private final CompilationService compilationService;
     private final EventService eventService;
+    private final StatisticService statisticService;
 
     public PublicController(
             CategoryService categoryService,
             CompilationService compilationService,
-            EventService eventService
+            EventService eventService,
+            StatisticService statisticService
     ) {
         this.categoryService = categoryService;
         this.compilationService = compilationService;
         this.eventService = eventService;
+        this.statisticService = statisticService;
     }
 
     @GetMapping("/categories")
@@ -79,7 +84,8 @@ public class PublicController {
     }
 
     @GetMapping("/events/{eventsId}")
-    public EventFullDto getEvent(@PathVariable Long eventsId) {
+    public EventFullDto getEvent(@PathVariable Long eventsId, HttpServletRequest request) {
+        statisticService.hit(request);
         return eventService.getEventById(eventsId);
     }
 }

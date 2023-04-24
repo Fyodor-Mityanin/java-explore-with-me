@@ -1,6 +1,5 @@
 package ru.practicum.stat.client.client;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -17,10 +16,11 @@ import java.util.List;
 public class StatClientImpl implements StatClient {
     private final RestTemplate restTemplate;
 
-    @Value("${stat-server.url}")
-    private String serviceUrl;
+    private final static String SERVICE_URL = "http://localhost:9090";
 
-    public StatClientImpl(RestTemplateBuilder builder) {
+
+    public StatClientImpl() {
+        RestTemplateBuilder builder = new RestTemplateBuilder();
         this.restTemplate = builder.build();
     }
 
@@ -30,7 +30,7 @@ public class StatClientImpl implements StatClient {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<EndpointHitDto> request = new HttpEntity<>(endpointHitDto, headers);
         return restTemplate.exchange(
-                serviceUrl + "/hit",
+                SERVICE_URL + "/hit",
                 HttpMethod.POST,
                 request,
                 Void.class
@@ -39,7 +39,7 @@ public class StatClientImpl implements StatClient {
 
     @Override
     public List<StatisticDto> stats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(serviceUrl + "/stats")
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(SERVICE_URL + "/stats")
                 .queryParam("start", start.toString())
                 .queryParam("end", end.toString())
                 .queryParam("unique", unique.toString())

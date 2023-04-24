@@ -9,7 +9,9 @@ import ru.practicum.ewm.entity.dto.*;
 import ru.practicum.ewm.error.exeptions.BadRequestException;
 import ru.practicum.ewm.service.EventService;
 import ru.practicum.ewm.service.ParticipationService;
+import ru.practicum.ewm.service.StatisticService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -22,11 +24,17 @@ public class UserController {
     private final ParticipationService participationService;
 
     private final EventService eventService;
+    private final StatisticService statisticService;
 
     @Autowired
-    public UserController(ParticipationService participationService, EventService eventService) {
+    public UserController(
+            ParticipationService participationService,
+            EventService eventService,
+            StatisticService statisticService
+    ) {
         this.participationService = participationService;
         this.eventService = eventService;
+        this.statisticService = statisticService;
     }
 
     @PostMapping("/{userId}/requests")
@@ -76,8 +84,10 @@ public class UserController {
     @SuppressWarnings("unused")
     public EventFullDto getEvents(
             @PathVariable Long userId,
-            @PathVariable Long eventId
+            @PathVariable Long eventId,
+            HttpServletRequest request
     ) {
+        statisticService.hit(request);
         return eventService.getEventById(eventId);
     }
 
