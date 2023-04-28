@@ -19,15 +19,13 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/users")
 @Validated
-public class UserController {
-
+public class UserEventsController {
     private final ParticipationService participationService;
-
     private final EventService eventService;
     private final StatisticService statisticService;
 
     @Autowired
-    public UserController(
+    public UserEventsController(
             ParticipationService participationService,
             EventService eventService,
             StatisticService statisticService
@@ -37,21 +35,6 @@ public class UserController {
         this.statisticService = statisticService;
     }
 
-    @PostMapping("/{userId}/requests")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ParticipationRequestDto createParticipation(@PathVariable Long userId, @RequestParam Long eventId) {
-        return participationService.createParticipation(userId, eventId);
-    }
-
-    @GetMapping("/{userId}/requests")
-    public List<ParticipationRequestDto> getParticipation(@PathVariable Long userId) {
-        return participationService.getParticipationsByUserId(userId);
-    }
-
-    @PatchMapping("/{userId}/requests/{requestId}/cancel")
-    public ParticipationRequestDto cancelParticipation(@PathVariable Long userId, @PathVariable Long requestId) {
-        return participationService.cancelParticipation(userId, requestId);
-    }
 
     @GetMapping("/{userId}/events/{eventId}/requests")
     @SuppressWarnings("unused")

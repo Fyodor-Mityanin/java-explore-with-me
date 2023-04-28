@@ -36,7 +36,7 @@ public class StatisticService {
         endpointHitDto.setTimestamp(LocalDateTime.now());
         log.info("Sending hit {} from {}", httpRequest.getRequestURI(), httpRequest.getRemoteAddr());
         ResponseEntity<Void> response = statClient.hit(endpointHitDto, serviceUrl);
-        if (response.getStatusCode() == HttpStatus.OK) {
+        if (response.getStatusCode() == HttpStatus.CREATED) {
             log.info("Hit success");
         } else {
             log.warn("Something went wrong");

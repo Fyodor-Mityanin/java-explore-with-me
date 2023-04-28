@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.entity.Category;
-import ru.practicum.ewm.entity.Event;
 import ru.practicum.ewm.entity.dto.CategoryDto;
 import ru.practicum.ewm.entity.dto.NewCategoryDto;
 import ru.practicum.ewm.entity.mapper.CategoryMapper;
@@ -23,10 +22,7 @@ public class CategoryService {
     private final EventRepository eventRepository;
 
     @Autowired
-    public CategoryService(
-            CategoryRepository categoryRepository,
-            EventRepository eventRepository
-    ) {
+    public CategoryService(CategoryRepository categoryRepository, EventRepository eventRepository) {
         this.categoryRepository = categoryRepository;
         this.eventRepository = eventRepository;
     }
@@ -53,19 +49,13 @@ public class CategoryService {
         Category category = categoryRepository.findById(catId).orElseThrow(
                 () -> new NotFoundException("Category with id=" + catId + " was not found")
         );
-        categoryRepository.findByNameIgnoreCase(categoryDto.getName()).ifPresent(
-                cat -> {
-                    throw new ConflictException("Category with name=" + categoryDto.getName() + " already exist");
-                }
-        );
         category.setName(categoryDto.getName());
         category = categoryRepository.save(category);
         return CategoryMapper.toDto(category);
     }
 
     public void deleteCategory(Long catId) {
-        List<Event> events = eventRepository.findByCategory_Id(catId);
-        if (events.size() == 0) {
+        if (!eventRepository.existsByCategory_id(catId)) {
             categoryRepository.deleteById(catId);
         } else {
             throw new ConflictException("Category with id=" + catId + " has events");
