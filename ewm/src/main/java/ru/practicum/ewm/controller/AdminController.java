@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.entity.dto.*;
@@ -67,9 +66,9 @@ public class AdminController {
     }
 
     @DeleteMapping("/users/{usersId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long usersId) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@PathVariable Long usersId) {
         userService.deleteUser(usersId);
-        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/events/{eventId}")
@@ -103,10 +102,9 @@ public class AdminController {
     }
 
     @DeleteMapping("/compilations/{compilationId}")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Void> deleteCompilation(@PathVariable Long compilationId) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCompilation(@PathVariable Long compilationId) {
         compilationService.deleteById(compilationId);
-        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/compilations/{compilationId}")
@@ -135,8 +133,8 @@ public class AdminController {
     }
 
     @DeleteMapping("/categories/{catId}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Long catId) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCategory(@PathVariable Long catId) {
         categoryService.deleteCategory(catId);
-        return ResponseEntity.noContent().build();
     }
 }

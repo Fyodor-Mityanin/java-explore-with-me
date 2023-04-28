@@ -14,9 +14,6 @@ import java.util.List;
 
 @Component
 public class StatClientImpl implements StatClient {
-
-    public static final String SERVICE_URL = "http://stats-server:9090";
-
     private final RestTemplate restTemplate;
 
     public StatClientImpl() {
@@ -25,12 +22,12 @@ public class StatClientImpl implements StatClient {
     }
 
     @Override
-    public ResponseEntity<Void> hit(EndpointHitDto endpointHitDto) {
+    public ResponseEntity<Void> hit(EndpointHitDto endpointHitDto, String serviceUrl) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<EndpointHitDto> request = new HttpEntity<>(endpointHitDto, headers);
         return restTemplate.exchange(
-                SERVICE_URL + "/hit",
+                serviceUrl + "/hit",
                 HttpMethod.POST,
                 request,
                 Void.class
@@ -38,8 +35,8 @@ public class StatClientImpl implements StatClient {
     }
 
     @Override
-    public List<StatisticDto> stats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(SERVICE_URL + "/stats")
+    public List<StatisticDto> stats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique, String serviceUrl) {
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(serviceUrl + "/stats")
                 .queryParam("start", start.toString())
                 .queryParam("end", end.toString())
                 .queryParam("unique", unique.toString())

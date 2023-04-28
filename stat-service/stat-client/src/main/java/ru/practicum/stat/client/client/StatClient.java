@@ -7,10 +7,9 @@ import ru.practicum.stat.client.dtos.StatisticDto;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
-@SuppressWarnings("unused")
 public interface StatClient {
-    ResponseEntity<Void> hit(EndpointHitDto endpointHitDto);
 
-    List<StatisticDto> stats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique);
+    ResponseEntity<Void> hit(EndpointHitDto endpointHitDto, String serviceUrl);
+
+    List<StatisticDto> stats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique, String serviceUrl);
 }

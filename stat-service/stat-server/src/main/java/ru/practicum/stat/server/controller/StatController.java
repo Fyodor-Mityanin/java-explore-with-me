@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.stat.client.dtos.EndpointHitDto;
@@ -27,9 +26,9 @@ public class StatController {
     }
 
     @PostMapping("/hit")
-    public ResponseEntity<Object> hitEndpoint(@RequestBody @Valid EndpointHitDto endpointHitDto) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public void hitEndpoint(@RequestBody @Valid EndpointHitDto endpointHitDto) {
         statService.createHit(endpointHitDto);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/stats")
