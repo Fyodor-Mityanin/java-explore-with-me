@@ -23,5 +23,5 @@ public class EventShortDto implements Serializable {
     private final UserShortDto initiator;
     private final Boolean paid;
     private final String title;
-    private final Integer views;
+    private Long views;
 }

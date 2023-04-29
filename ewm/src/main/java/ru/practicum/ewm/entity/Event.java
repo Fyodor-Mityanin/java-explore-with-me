@@ -75,6 +75,6 @@ public class Event {
     @Enumerated(EnumType.STRING)
     private State state;
 
-    @OneToMany(mappedBy = "event")
+    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
     private Set<Participation> participations = new LinkedHashSet<>();
 }

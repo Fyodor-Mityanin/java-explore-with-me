@@ -26,6 +26,8 @@ import ru.practicum.ewm.repository.spec.EventSpecification;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,11 +37,19 @@ public class EventService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
 
+    private final StatisticService statisticService;
+
     @Autowired
-    public EventService(EventRepository eventRepository, CategoryRepository categoryRepository, UserRepository userRepository) {
+    public EventService(
+            EventRepository eventRepository,
+            CategoryRepository categoryRepository,
+            UserRepository userRepository,
+            StatisticService statisticService
+    ) {
         this.eventRepository = eventRepository;
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
+        this.statisticService = statisticService;
     }
 
     public EventFullDto createEvent(NewEventDto newEventDto, Long userId) {
@@ -146,16 +156,31 @@ public class EventService {
             Integer from,
             Integer size
     ) {
-        Pageable pageable = sort != null ? PageRequest.of(from, size, Sort.by(Sort.Direction.DESC, sort.getColumnName())) : PageRequest.of(from, size);
+        Pageable pageable = sort == SortType.EVENT_DATE ?
+                PageRequest.of(from, size, Sort.by(Sort.Direction.DESC, sort.getColumnName())) :
+                PageRequest.of(from, size);
+
         Specification<Event> spec = Specification
                 .where(EventSpecification.annotationTextLike(text).or(EventSpecification.descriptionTextLike(text)))
                 .and(EventSpecification.categoryIn(categoryIds))
                 .and(EventSpecification.equalPaid(paid))
                 .and(EventSpecification.dateAfter(rangeStart))
-                .and(EventSpecification.dateBefore(rangeEnd))
-                .and(EventSpecification.onlyAvailable(onlyAvailable));
-        Page<Event> events = eventRepository.findAll(spec, pageable);
-        return EventMapper.toShortDtos(events.toSet());
+                .and(EventSpecification.dateBefore(rangeEnd));
+        Set<Event> events = eventRepository.findAll(spec, pageable).toSet();
+        if (onlyAvailable) {
+            events = events.stream()
+                    .filter(e -> e.getParticipantLimit() > e.getParticipations().size())
+                    .collect(Collectors.toSet());
+        }
+        List<EventShortDto> eventShortDtos;
+        if (sort == SortType.VIEWS) {
+            Set<Long> eventIds = events.stream().map(Event::getId).collect(Collectors.toSet());
+            Map<Long, Long> viewsMap = statisticService.getEventViews(eventIds);
+            eventShortDtos = EventMapper.toShortDtos(events, viewsMap);
+        } else {
+            eventShortDtos = EventMapper.toShortDtos(events);
+        }
+        return eventShortDtos;
     }
 
     @SuppressWarnings("unused")

@@ -11,6 +11,7 @@ import ru.practicum.ewm.entity.enums.State;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -68,11 +69,21 @@ public class EventMapper {
                 .initiator(UserMapper.toShortDto(obj.getInitiator()))
                 .paid(obj.getPaid())
                 .title(obj.getTitle())
-                .views(0)
                 .build();
     }
 
     public static List<EventShortDto> toShortDtos(Set<Event> objs) {
         return objs.stream().map(EventMapper::toShortDto).collect(Collectors.toList());
+    }
+
+    public static List<EventShortDto> toShortDtos(Set<Event> objs, Map<Long, Long> viewsMap) {
+        List<EventShortDto> dtos = objs.stream().map(EventMapper::toShortDto).collect(Collectors.toList());
+        dtos.forEach(
+                dto -> {
+                    Long views = viewsMap.get(dto.getId());
+                    dto.setViews(views);
+                }
+        );
+        return dtos;
     }
 }

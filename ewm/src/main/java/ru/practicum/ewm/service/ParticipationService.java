@@ -17,6 +17,7 @@ import ru.practicum.ewm.repository.EventRepository;
 import ru.practicum.ewm.repository.ParticipationRepository;
 import ru.practicum.ewm.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -69,24 +70,52 @@ public class ParticipationService {
             Long userId,
             Long eventId
     ) {
-        userRepository.findById(userId).orElseThrow(
-                () -> new NotFoundException("User with id=" + userId + " was not found")
-        );
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("User with id=" + userId + " was not found");
+        }
         Event event = eventRepository.findById(eventId).orElseThrow(
                 () -> new NotFoundException("Event with id=" + eventId + " was not found")
         );
-        int left = event.getParticipantLimit() - participationRepository.countByEvent_IdAndStatus(eventId, RequestStatus.CONFIRMED);
-        if (left < updateRequest.getRequestIds().size()) {
-            throw new ConflictException("Event is full");
-        }
         List<Participation> participations = participationRepository.findByIdIn(updateRequest.getRequestIds());
-        participations.forEach(participation -> participation.setStatus(updateRequest.getStatus()));
-        participations = participationRepository.saveAll(participations);
+        List<ParticipationRequestDto> confirmedRequests = new ArrayList<>();
+        List<ParticipationRequestDto> rejectedRequests = new ArrayList<>();
+        if (updateRequest.getStatus() == RequestStatus.CONFIRMED && event.getRequestModeration()) {
+            int left = event.getParticipantLimit() - participationRepository.countByEvent_IdAndStatus(eventId, RequestStatus.CONFIRMED);
+            if (left <= 0) {
+                throw new ConflictException("Event is full");
+            }
+            int count = 0;
+            for (Participation participation : participations) {
+                if (count <= left) {
+                    participation.setStatus(RequestStatus.CONFIRMED);
+                    confirmedRequests.add(ParticipationMapper.toDto(participation));
+                } else {
+                    participation.setStatus(RequestStatus.REJECTED);
+                    rejectedRequests.add(ParticipationMapper.toDto(participation));
+                }
+                count++;
+            }
+        } else if (updateRequest.getStatus() == RequestStatus.CONFIRMED) {
+            participations.forEach(p -> {
+                        p.setStatus(RequestStatus.CONFIRMED);
+                        confirmedRequests.add(ParticipationMapper.toDto(p));
+                    }
+            );
+        } else {
+            participations.forEach(p -> {
+                        if (p.getStatus() == RequestStatus.CONFIRMED) {
+                            throw new ConflictException("Participation already confirmed");
+                        }
+                        p.setStatus(RequestStatus.REJECTED);
+                        rejectedRequests.add(ParticipationMapper.toDto(p));
+                    }
+            );
+        }
+        participationRepository.saveAll(participations);
         return EventRequestStatusUpdateResult.builder()
-                .confirmedRequests(ParticipationMapper.toDtos(participations))
-                .rejectedRequests(ParticipationMapper.toDtos(participations))
+                .confirmedRequests(confirmedRequests)
+                .rejectedRequests(rejectedRequests)
                 .build();
-
     }
 
     public List<ParticipationRequestDto> getParticipationsByUserId(Long userId) {

@@ -57,9 +57,4 @@ public class EventSpecification {
         return (root, query, builder) ->
                 paid != null ? builder.equal(root.get("paid"), paid) : builder.conjunction();
     }
-
-    public static Specification<Event> onlyAvailable(Boolean onlyAvailable) {
-        //TODO тут доделать
-        return (root, query, builder) -> builder.conjunction();
-    }
 }
