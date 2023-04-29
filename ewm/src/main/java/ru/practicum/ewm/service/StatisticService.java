@@ -59,7 +59,7 @@ public class StatisticService {
                         Collectors.toMap(
                                 i -> {
                                     String[] urlParts = i.getUri().split("/");
-                                    return Long.valueOf(urlParts[urlParts.length-1]);
+                                    return Long.valueOf(urlParts[urlParts.length - 1]);
                                 },
                                 StatisticDto::getHits
                         )
