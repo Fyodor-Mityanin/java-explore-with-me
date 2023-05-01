@@ -49,7 +49,7 @@ public class EventMapper {
                 .state(obj.getState())
                 .views(views != null ? views : 0)
                 .confirmedRequests(obj.getParticipations().stream()
-                        .filter(i->i.getStatus() == RequestStatus.CONFIRMED)
+                        .filter(i -> i.getStatus() == RequestStatus.CONFIRMED)
                         .count()
                 )
                 .build();
@@ -70,7 +70,7 @@ public class EventMapper {
                 .annotation(obj.getAnnotation())
                 .category(CategoryMapper.toDto(obj.getCategory()))
                 .confirmedRequests(obj.getParticipations().stream()
-                        .filter(i->i.getStatus() == RequestStatus.CONFIRMED)
+                        .filter(i -> i.getStatus() == RequestStatus.CONFIRMED)
                         .count()
                 )
                 .eventDate(obj.getEventDate())
@@ -84,8 +84,8 @@ public class EventMapper {
     public static List<EventShortDto> toShortDtos(Set<Event> objs, Map<Long, Long> viewsMap) {
         List<EventShortDto> dtos = new ArrayList<>();
         objs.forEach(obj -> {
-                    Long views = viewsMap.get(obj.getId());
-                    dtos.add(toShortDto(obj, views));
+            Long views = viewsMap.get(obj.getId());
+            dtos.add(toShortDto(obj, views));
         });
         return dtos;
     }
