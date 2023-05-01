@@ -20,6 +20,8 @@ import java.util.List;
 public class StatController {
     private final StatService statService;
 
+    private final String DATE_TIME_PATTERN = "[yyyy-MM-dd'%20'HH:mm:ss][yyyy-MM-dd HH:mm:ss]";
+
     @Autowired
     public StatController(StatService statService) {
         this.statService = statService;
@@ -33,8 +35,8 @@ public class StatController {
 
     @GetMapping("/stats")
     public List<StatisticDto> getStat(
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
+            @RequestParam @DateTimeFormat(pattern = DATE_TIME_PATTERN) LocalDateTime start,
+            @RequestParam @DateTimeFormat(pattern = DATE_TIME_PATTERN) LocalDateTime end,
             @RequestParam(defaultValue = "") List<String> uris,
             @RequestParam(defaultValue = "false") Boolean unique
     ) {

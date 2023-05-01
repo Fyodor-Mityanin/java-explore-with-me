@@ -12,6 +12,7 @@ import ru.practicum.stat.client.dtos.StatisticDto;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,7 +50,7 @@ public class StatisticService {
         }
     }
 
-    public Map<Long, Long> getEventViews(Set<Long> eventIds) {
+    public Map<Long, Long> getEventsViews(Set<Long> eventIds) {
         LocalDateTime end = LocalDateTime.now();
         LocalDateTime start = end.minusYears(1);
         List<String> uris = eventIds.stream().map(id -> "/events/" + id).collect(Collectors.toList());
@@ -64,5 +65,17 @@ public class StatisticService {
                                 StatisticDto::getHits
                         )
                 );
+    }
+
+    public Long getEventViews(Long eventId) {
+        LocalDateTime end = LocalDateTime.now();
+        LocalDateTime start = end.minusYears(1);
+        List<String> uris = Collections.singletonList("/events/" + eventId);
+        List<StatisticDto> stats = statClient.stats(end, start, uris, true, serviceUrl);
+        if (stats.size() == 0) {
+            return 0L;
+        } else {
+            return stats.get(0).getHits();
+        }
     }
 }

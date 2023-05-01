@@ -7,13 +7,10 @@ import ru.practicum.ewm.entity.dto.EventFullDto;
 import ru.practicum.ewm.entity.dto.EventShortDto;
 import ru.practicum.ewm.entity.dto.Location;
 import ru.practicum.ewm.entity.dto.NewEventDto;
+import ru.practicum.ewm.entity.enums.RequestStatus;
 import ru.practicum.ewm.entity.enums.State;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class EventMapper {
 
@@ -34,7 +31,7 @@ public class EventMapper {
         return event;
     }
 
-    public static EventFullDto toDto(Event obj) {
+    public static EventFullDto toDto(Event obj, Long views) {
         return EventFullDto.builder()
                 .id(obj.getId())
                 .title(obj.getTitle())
@@ -50,40 +47,56 @@ public class EventMapper {
                 .publishedOn(obj.getPublishedOn())
                 .requestModeration(obj.getRequestModeration())
                 .state(obj.getState())
+                .views(views != null ? views : 0)
+                .confirmedRequests(obj.getParticipations().stream()
+                        .filter(i->i.getStatus() == RequestStatus.CONFIRMED)
+                        .count()
+                )
                 .build();
     }
 
-    public static List<EventFullDto> toDtos(List<Event> objs) {
+    public static List<EventFullDto> toDtos(List<Event> objs, Map<Long, Long> viewsMap) {
         List<EventFullDto> dtos = new ArrayList<>();
-        objs.forEach(i -> dtos.add(toDto(i)));
+        objs.forEach(obj -> {
+            Long views = viewsMap.get(obj.getId());
+            dtos.add(toDto(obj, views));
+        });
         return dtos;
     }
 
-    public static EventShortDto toShortDto(Event obj) {
+    public static EventShortDto toShortDto(Event obj, Long views) {
         return EventShortDto.builder()
                 .id(obj.getId())
                 .annotation(obj.getAnnotation())
                 .category(CategoryMapper.toDto(obj.getCategory()))
-                .confirmedRequests(0)
+                .confirmedRequests(obj.getParticipations().stream()
+                        .filter(i->i.getStatus() == RequestStatus.CONFIRMED)
+                        .count()
+                )
                 .eventDate(obj.getEventDate())
                 .initiator(UserMapper.toShortDto(obj.getInitiator()))
                 .paid(obj.getPaid())
                 .title(obj.getTitle())
+                .views(views != null ? views : 0)
                 .build();
     }
 
-    public static List<EventShortDto> toShortDtos(Set<Event> objs) {
-        return objs.stream().map(EventMapper::toShortDto).collect(Collectors.toList());
+    public static List<EventShortDto> toShortDtos(Set<Event> objs, Map<Long, Long> viewsMap) {
+        List<EventShortDto> dtos = new ArrayList<>();
+        objs.forEach(obj -> {
+                    Long views = viewsMap.get(obj.getId());
+                    dtos.add(toShortDto(obj, views));
+        });
+        return dtos;
     }
 
-    public static List<EventShortDto> toShortDtos(Set<Event> objs, Map<Long, Long> viewsMap) {
-        List<EventShortDto> dtos = objs.stream().map(EventMapper::toShortDto).collect(Collectors.toList());
-        dtos.forEach(
-                dto -> {
-                    Long views = viewsMap.get(dto.getId());
-                    dto.setViews(views);
-                }
-        );
+    public static List<EventShortDto> toShortDtosSorted(Set<Event> objs, Map<Long, Long> viewsMap) {
+        List<EventShortDto> dtos = new ArrayList<>();
+        objs.forEach(obj -> {
+            Long views = viewsMap.get(obj.getId());
+            dtos.add(toShortDto(obj, views));
+        });
+        dtos.sort(Comparator.comparing(EventShortDto::getViews));
         return dtos;
     }
 }

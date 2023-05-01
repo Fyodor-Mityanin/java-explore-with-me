@@ -17,7 +17,7 @@ public class EventShortDto implements Serializable {
     private final Long id;
     private final String annotation;
     private final CategoryDto category;
-    private final Integer confirmedRequests;
+    private final Long confirmedRequests;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private final LocalDateTime eventDate;
     private final UserShortDto initiator;

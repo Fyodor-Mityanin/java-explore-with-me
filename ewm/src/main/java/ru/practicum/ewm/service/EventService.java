@@ -1,7 +1,6 @@
 package ru.practicum.ewm.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -61,7 +60,7 @@ public class EventService {
         );
         Event event = EventMapper.toObject(category, requester, newEventDto, State.PENDING);
         event = eventRepository.save(event);
-        return EventMapper.toDto(event);
+        return EventMapper.toDto(event, 0L);
     }
 
     @Transactional
@@ -113,7 +112,8 @@ public class EventService {
             );
         }
         event = eventRepository.save(event);
-        return EventMapper.toDto(event);
+        Long views = statisticService.getEventViews(eventId);
+        return EventMapper.toDto(event, views);
     }
 
 
@@ -135,14 +135,18 @@ public class EventService {
         if (states != null) {
             spec.and(EventSpecification.stateIn(states));
         }
-        Page<Event> events = eventRepository.findAll(spec, pageable);
-        return EventMapper.toDtos(events.toList());
+        List<Event> events = eventRepository.findAll(spec, pageable).toList();
+        Set<Long> eventIds = events.stream().map(Event::getId).collect(Collectors.toSet());
+        Map<Long, Long> viewsMap = statisticService.getEventsViews(eventIds);
+        return EventMapper.toDtos(events, viewsMap);
     }
 
     public List<EventShortDto> getEventsUser(Long userId, Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from, size);
-        Page<Event> events = eventRepository.findByInitiator_Id(userId, pageable);
-        return events.stream().map(EventMapper::toShortDto).collect(Collectors.toList());
+        Set<Event> events = eventRepository.findByInitiator_Id(userId, pageable).toSet();
+        Set<Long> eventIds = events.stream().map(Event::getId).collect(Collectors.toSet());
+        Map<Long, Long> viewsMap = statisticService.getEventsViews(eventIds);
+        return EventMapper.toShortDtos(events, viewsMap);
     }
 
     public List<EventShortDto> getEventsPublic(
@@ -173,17 +177,16 @@ public class EventService {
                     .collect(Collectors.toSet());
         }
         List<EventShortDto> eventShortDtos;
+        Set<Long> eventIds = events.stream().map(Event::getId).collect(Collectors.toSet());
+        Map<Long, Long> viewsMap = statisticService.getEventsViews(eventIds);
         if (sort == SortType.VIEWS) {
-            Set<Long> eventIds = events.stream().map(Event::getId).collect(Collectors.toSet());
-            Map<Long, Long> viewsMap = statisticService.getEventViews(eventIds);
-            eventShortDtos = EventMapper.toShortDtos(events, viewsMap);
+            eventShortDtos = EventMapper.toShortDtosSorted(events, viewsMap);
         } else {
-            eventShortDtos = EventMapper.toShortDtos(events);
+            eventShortDtos = EventMapper.toShortDtos(events, viewsMap);
         }
         return eventShortDtos;
     }
 
-    @SuppressWarnings("unused")
     public EventFullDto patchEventUser(UpdateEventUserRequest updateEventUserRequest, Long userId, Long eventId) {
         Event event = eventRepository.findById(eventId).orElseThrow(
                 () -> new NotFoundException("Event with id=" + eventId + " was not found")
@@ -229,13 +232,15 @@ public class EventService {
             );
         }
         event = eventRepository.save(event);
-        return EventMapper.toDto(event);
+        Long views = statisticService.getEventViews(eventId);
+        return EventMapper.toDto(event, views);
     }
 
     public EventFullDto getEventById(Long eventId) {
         Event event = eventRepository.findById(eventId).orElseThrow(
                 () -> new NotFoundException("Event with id=" + eventId + " was not found")
         );
-        return EventMapper.toDto(event);
+        Long views = statisticService.getEventViews(eventId);
+        return EventMapper.toDto(event, views);
     }
 }

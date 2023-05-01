@@ -31,6 +31,6 @@ public class EventFullDto implements Serializable {
     private final LocalDateTime publishedOn;
     private final Boolean requestModeration;
     private final State state;
-    private final Integer views;
-    private final Integer confirmedRequests;
+    private final Long views;
+    private final Long confirmedRequests;
 }
