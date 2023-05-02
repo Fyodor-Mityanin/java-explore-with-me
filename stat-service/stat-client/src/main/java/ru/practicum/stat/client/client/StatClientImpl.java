@@ -1,6 +1,5 @@
 package ru.practicum.stat.client.client;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -11,21 +10,22 @@ import ru.practicum.stat.client.dtos.EndpointHitDto;
 import ru.practicum.stat.client.dtos.StatisticDto;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Component
 public class StatClientImpl implements StatClient {
     private final RestTemplate restTemplate;
 
-    @Value("${stat-server.url}")
-    private String serviceUrl;
+    private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd' 'HH:mm:ss");
 
-    public StatClientImpl(RestTemplateBuilder builder) {
+    public StatClientImpl() {
+        RestTemplateBuilder builder = new RestTemplateBuilder();
         this.restTemplate = builder.build();
     }
 
     @Override
-    public ResponseEntity<Void> hit(EndpointHitDto endpointHitDto) {
+    public ResponseEntity<Void> hit(EndpointHitDto endpointHitDto, String serviceUrl) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<EndpointHitDto> request = new HttpEntity<>(endpointHitDto, headers);
@@ -38,18 +38,20 @@ public class StatClientImpl implements StatClient {
     }
 
     @Override
-    public List<StatisticDto> stats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+    public List<StatisticDto> stats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique, String serviceUrl) {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(serviceUrl + "/stats")
-                .queryParam("start", start.toString())
-                .queryParam("end", end.toString())
+                .queryParam("start", start.format(dtf))
+                .queryParam("end", end.format(dtf))
                 .queryParam("unique", unique.toString())
                 .queryParam("uris", String.join(",", uris));
+        String uri = uriBuilder.toUriString();
         ResponseEntity<List<StatisticDto>> responseEntity =
                 restTemplate.exchange(
-                        uriBuilder.toUriString(),
+                        uri,
                         HttpMethod.GET,
                         null,
-                        new ParameterizedTypeReference<>() {}
+                        new ParameterizedTypeReference<>() {
+                        }
                 );
         return responseEntity.getBody();
     }
