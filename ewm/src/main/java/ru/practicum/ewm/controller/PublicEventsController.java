@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.ewm.entity.dto.CommentDto;
 import ru.practicum.ewm.entity.dto.EventFullDto;
 import ru.practicum.ewm.entity.dto.EventShortDto;
 import ru.practicum.ewm.entity.enums.SortType;
@@ -50,5 +51,10 @@ public class PublicEventsController {
     public EventFullDto getEvent(@PathVariable Long eventsId, HttpServletRequest request) {
         statisticService.hit(request);
         return eventService.getEventById(eventsId);
+    }
+
+    @GetMapping("/{eventId}/comments")
+    public List<CommentDto> getComments(@PathVariable Long eventId) {
+        return eventService.getCommentsByEventId(eventId);
     }
 }

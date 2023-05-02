@@ -91,4 +91,14 @@ public class UserEventsController {
     ) {
         return eventService.patchEventUser(updateEventUserRequest, userId, eventId);
     }
+
+    @PostMapping("/{userId}/events/{eventId}/comments")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CommentDto createComment(
+            @PathVariable Long userId,
+            @PathVariable Long eventId,
+            @RequestBody CommentRequestDto commentRequestDto
+    ) {
+        return eventService.createComment(userId, eventId, commentRequestDto);
+    }
 }

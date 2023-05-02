@@ -7,6 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.entity.Category;
+import ru.practicum.ewm.entity.Comment;
 import ru.practicum.ewm.entity.Event;
 import ru.practicum.ewm.entity.User;
 import ru.practicum.ewm.entity.dto.*;
@@ -14,10 +15,12 @@ import ru.practicum.ewm.entity.enums.SortType;
 import ru.practicum.ewm.entity.enums.State;
 import ru.practicum.ewm.entity.enums.StateAdminAction;
 import ru.practicum.ewm.entity.enums.StateUserAction;
+import ru.practicum.ewm.entity.mapper.CommentMapper;
 import ru.practicum.ewm.entity.mapper.EventMapper;
 import ru.practicum.ewm.error.exeptions.ConflictException;
 import ru.practicum.ewm.error.exeptions.NotFoundException;
 import ru.practicum.ewm.repository.CategoryRepository;
+import ru.practicum.ewm.repository.CommentRepository;
 import ru.practicum.ewm.repository.EventRepository;
 import ru.practicum.ewm.repository.UserRepository;
 import ru.practicum.ewm.repository.spec.EventSpecification;
@@ -37,18 +40,20 @@ public class EventService {
     private final UserRepository userRepository;
 
     private final StatisticService statisticService;
+    private final CommentRepository commentRepository;
 
     @Autowired
     public EventService(
             EventRepository eventRepository,
             CategoryRepository categoryRepository,
             UserRepository userRepository,
-            StatisticService statisticService
-    ) {
+            StatisticService statisticService,
+            CommentRepository commentRepository) {
         this.eventRepository = eventRepository;
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
         this.statisticService = statisticService;
+        this.commentRepository = commentRepository;
     }
 
     public EventFullDto createEvent(NewEventDto newEventDto, Long userId) {
@@ -242,5 +247,24 @@ public class EventService {
         );
         Long views = statisticService.getEventViews(eventId);
         return EventMapper.toDto(event, views);
+    }
+
+    public CommentDto createComment(Long userId, Long eventId, CommentRequestDto commentRequestDto) {
+        Event event = eventRepository.findById(eventId).orElseThrow(
+                () -> new NotFoundException("Event with id=" + eventId + " was not found")
+        );
+        User author = userRepository.findById(userId).orElseThrow(
+                () -> new NotFoundException("User with id=" + userId + " was not found")
+        );
+        Comment comment = CommentMapper.toObject(commentRequestDto, event, author);
+        comment = commentRepository.save(comment);
+        return CommentMapper.toDto(comment);
+    }
+
+    public List<CommentDto> getCommentsByEventId(Long eventId) {
+        if (!eventRepository.existsById(eventId)) {
+            throw new NotFoundException("Event with id=" + eventId + " was not found");
+        }
+        return CommentMapper.toDtos(commentRepository.findByEvent_Id(eventId));
     }
 }
