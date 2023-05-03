@@ -29,6 +29,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -266,5 +267,40 @@ public class EventService {
             throw new NotFoundException("Event with id=" + eventId + " was not found");
         }
         return CommentMapper.toDtos(commentRepository.findByEvent_Id(eventId));
+    }
+
+    public void deleteComment(Long userId, Long eventId, Long commentId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new NotFoundException("Comment with id=" + commentId + " was not found")
+        );
+        if (!Objects.equals(comment.getAuthor().getId(), userId)) {
+            throw new ConflictException("Forbidden");
+        }
+        if (!Objects.equals(comment.getEvent().getId(), eventId)) {
+            throw new ConflictException("Event id=" + eventId + "dont have comment id=" + commentId);
+        }
+        commentRepository.delete(comment);
+    }
+
+    public CommentDto updateComment(Long userId, Long eventId, Long commentId, CommentRequestDto commentRequestDto) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new NotFoundException("Comment with id=" + commentId + " was not found")
+        );
+        if (!Objects.equals(comment.getAuthor().getId(), userId)) {
+            throw new ConflictException("Forbidden");
+        }
+        if (!Objects.equals(comment.getEvent().getId(), eventId)) {
+            throw new ConflictException("Event id=" + eventId + "dont have comment id=" + commentId);
+        }
+        comment.setText(commentRequestDto.getText());
+        comment = commentRepository.save(comment);
+        return CommentMapper.toDto(comment);
+    }
+
+    public void deleteCommentAdmin(Long commentId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new NotFoundException("Comment with id=" + commentId + " was not found")
+        );
+        commentRepository.delete(comment);
     }
 }

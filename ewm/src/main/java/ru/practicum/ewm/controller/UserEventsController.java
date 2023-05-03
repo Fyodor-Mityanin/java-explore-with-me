@@ -101,4 +101,24 @@ public class UserEventsController {
     ) {
         return eventService.createComment(userId, eventId, commentRequestDto);
     }
+
+    @DeleteMapping("/{userId}/events/{eventId}/comments/{commentId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void createComment(
+            @PathVariable Long userId,
+            @PathVariable Long eventId,
+            @PathVariable Long commentId
+    ) {
+        eventService.deleteComment(userId, eventId, commentId);
+    }
+
+    @PatchMapping("/{userId}/events/{eventId}/comments/{commentId}")
+    public CommentDto updateComment(
+            @PathVariable Long userId,
+            @PathVariable Long eventId,
+            @PathVariable Long commentId,
+            @RequestBody CommentRequestDto commentRequestDto
+    ) {
+        return eventService.updateComment(userId, eventId, commentId, commentRequestDto);
+    }
 }
